@@ -6,6 +6,7 @@ import Deposit from './deposit';
 import Withdraw from './withdraw';
 import Balance from './balance';
 import AllData from './alldata';
+import UserContext from './usercontext';
 import { HashRouter, Route, Routes } from 'react-router-dom'; // Import Routes from react-router-dom
 import './app.css';
 
@@ -13,7 +14,7 @@ function App() {
   return (
     <HashRouter>
       <div>
-        {/* Get our navbar from navbar.js */}
+        <UserContext.Provider value={{user:'',auth:false,name:'',email:'',password:'',balance:'0'}}>
         <NavBar />
         <div className="container" style={{ padding: "20px" }}>
           <Routes>
@@ -29,6 +30,7 @@ function App() {
             <img src="/bank.png" alt="Bank" />
           </div>
         </div>
+        </UserContext.Provider>
       </div>
     </HashRouter>
   );
