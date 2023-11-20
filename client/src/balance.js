@@ -1,32 +1,40 @@
 import React from 'react';
 import Card from './card';
-import CardForm from './cardform';
+import UserContext from "./usercontext";
 
 function Balance() {
-    const [data, setData] = React.useState('');
-    const [status, setStatus] = React.useState(true);
+    const ctx = React.useContext(UserContext);
+    const [show, setShow] = React.useState(ctx.auth); 
 
-    function fetchAccount() {
-        setData('$' + data[0].balance);
-        setStatus('Login to see account balance');
-        setTimeout(() => setStatus(''),3000);
-    }
+    React.useEffect(() => {
+        fetch(`/account/balance/${ctx.email}`)
+          .then(response => response.json())
+          .then(data => {
+            console.log(data);
+            ctx.balance = data[0].balance;
+          });
+    });
   
     return (
         <Card
             bgcolor="info"
             header="Balance"
-            text={data}
-            status={status}
+            text=""
+            status=""
             body={
                 <>
-                <CardForm
-                    showName="none"
-                    showPassword="none"
-                    showAmount="none"
-                    showEmail="none"              
-                />
-                {<button type="submit" className="btn btn-light" onClick={fetchAccount}>See Balance</button>}
+                {show ?
+                <>
+                <div className="card" style={{ marginBottom: '10px' }}>
+                    <div className="card-body">
+                        <h5 className="card-title">Name: {ctx.name}</h5>
+                        <p className="card-text">Email: {ctx.email}</p>
+                        <p className="card-text">Balance: ${ctx.balance}</p>
+                    </div>
+                </div>
+                </>
+                :
+                <h5>Login to make a deposit</h5>}
                 </>
             }
         />

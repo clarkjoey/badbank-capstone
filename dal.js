@@ -46,92 +46,123 @@ async function closeMongoDBConnection() {
 }
 
 // create user account
-function create(name, email, password, balance){
-    return new Promise((resolve, reject) => {    
+// /account/create/:name/:email/:password/:balance
+async function create(name, email, password, balance) {
+    try {
+        balance = parseInt(balance); // add starting value to new account
+        const doc = { name, email, password, balance };
         const collection = db.collection('BadBankCollection');
-        balance = parseInt(balance);
-        const doc = {name, email, password, balance};
-        collection.insertOne(doc, {w:1}, function(err, result) {
-            err ? reject(err) : resolve(doc);
-        });    
-    })
+        // add to the DB
+        const insertResult = await collection.insertOne(doc);
+        // return the account info
+        if (insertResult.acknowledged) {
+            const findResult = await collection.find({ "email": email }).toArray();
+            return findResult;
+        } else {
+            return { error: "No documents inserted" }; // no documents were inserted
+        }
+    } catch (error) {
+        throw error;
+    }
 }
 
 // deposit into database
-function deposit(email, balance) {
-    return new Promise((resolve, reject) => {
-        const collection = db.collection('BadBankCollection');        
-        balance = parseInt(balance);
-        collection.updateOne(
-                {"email":email}, 
-                {$inc: {"balance":balance}},
-                function(err, result) {err ? reject(err) : resolve(result);}
-            )
-    });   
+// /account/deposit/:email/:balance
+async function deposit(email, balance) {
+    try {
+        balance = parseInt(balance); // add to account
+        const collection = db.collection('BadBankCollection');
+        // update the DB
+        const updateResult = await collection.updateOne(
+            { "email": email },
+            { $inc: { "balance": balance } }
+        );
+        // return the account info
+        if (updateResult.modifiedCount > 0) {
+            const findResult = await collection.find({ "email": email }).toArray();
+            return findResult;
+        } else {
+            return { error: "No documents updated" }; // no documents were updated
+        }
+    } catch (error) {
+        throw error;
+    }  
 }
 
 // withdraw from database
-function withdraw(email, balance) {
-    return new Promise((resolve, reject) => {
-        const collection = db.collection('BadBankCollection');        
-        balance = -parseInt(balance);
-        collection.updateOne(
-                {"email":email}, 
-                {$inc: {"balance":balance}},
-                function(err, result) {err ? reject(err) : resolve(result);}
-            )
-    });   
+// /account/withdraw/:email/:balance
+async function withdraw(email, balance) {
+    try {
+        balance = -parseInt(balance); // subtract from account
+        const collection = db.collection('BadBankCollection');
+        // update the DB
+        const updateResult = await collection.updateOne(
+            { "email": email },
+            { $inc: { "balance": balance } }
+        );
+        // return the account info
+        if (updateResult.modifiedCount > 0) {
+            const findResult = await collection.find({ "email": email }).toArray();
+            return findResult;
+        } else {
+            return { error: "No documents updated" }; // no documents were updated
+        }
+    } catch (error) {
+        throw error;
+    }   
 }
 
 // find user account balance
-function balance(email) {
-    return new Promise((resolve, reject) => {
-        const collection = db.collection('BadBankCollection');        
-        collection.find({"email":email})
-            .toArray(function(err, docs) {
-                err ? reject(err) : resolve(docs);
-            }); 
-    });   
+// /account/balance/:email
+async function balance(email) {
+    try {
+        const collection = db.collection('BadBankCollection');
+        const result = await collection.find({ "email": email }).toArray();
+        return result;
+    } catch (error) {
+        throw error;
+    }  
 }
 
 // find user with given email and password, returns an empty array if doesn't exist
-function login(email, password) {
-    return new Promise((resolve, reject) => {
-        const collection = db.collection('BadBankCollection');        
-        collection.find({
+// /account/login/:email/:password
+async function login(email, password) {
+    try {
+        const collection = db.collection('BadBankCollection');
+        const result = await collection.find({ 
             $and: [
                 {"email": {$eq: email}}, 
                 {"password": {$eq: password}}
             ]
-        })
-        .toArray(function(err, docs) {
-            err ? reject(err) : resolve(docs);
-        }); 
-    });   
+        }).toArray();
+        return result;
+    } catch (error) {
+        throw error;
+    }  
 }
 
 // find user account
-// FIXED
+// /account/find/:email
 async function find(email) {
     try {
         const collection = db.collection('BadBankCollection');
         const result = await collection.find({ "email": email }).toArray();
         return result;
     } catch (error) {
-        throw error; // Propagate the error to the caller
+        throw error;
     }
 }
 
 // all users
-function all(){
-    return new Promise((resolve, reject) => {    
-        const customers = db
-            .collection('BadBankCollection')
-            .find({})
-            .toArray(function(err, docs) {
-                err ? reject(err) : resolve(docs);
-        });    
-    })
+// /account/all
+async function all(){
+    try {
+        const collection = db.collection('BadBankCollection');
+        const result = await collection.find({}).toArray();
+        return result;
+    } catch (error) {
+        throw error;
+    }
 }
 
 module.exports = {

@@ -12,11 +12,11 @@ export function useUserContext() {
 export function UserContextProvider({ children }) {
   const [userState, setUserState] = useState({
     user: '',
-    auth: true,
+    auth: false,
     name: '',
     email: '',
     password: '',
-    balance: '0',
+    balance: '',
   });
 
   return (

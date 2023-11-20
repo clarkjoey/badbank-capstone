@@ -36,7 +36,7 @@ function CreateAccount(props){
 
     return (
         <Card
-            bgcolor="primary"
+            bgcolor="dark"
             header="Create Account"
             text=""
             status={status}

@@ -14,8 +14,9 @@ app.use(cors());
 app.get('/account/find/:email', async (req, res) => {
   try {
     const user = await dal.find(req.params.email);
+    if (JSON.stringify(user) === '[]') console.log(`User with email ${req.params.email} not found in DB`);
+    else console.log(`User with email ${user[0].email} found`);
     console.log(user);
-    console.log("server")
     res.send(user);
   } catch (error) {
     console.error('Error querying MongoDB:', error);
@@ -32,6 +33,7 @@ app.get('/account/create/:name/:email/:password/:balance', async (req, res) => {
       req.params.password,
       req.params.balance
     );
+    console.log(`Successfully created user ${user[0].name} with starting account balance of $${user[0].balance}`);
     console.log(user);
     res.send(user);
   } catch (error) {
@@ -44,6 +46,8 @@ app.get('/account/create/:name/:email/:password/:balance', async (req, res) => {
 app.get('/account/deposit/:email/:balance', async (req, res) => {
   try {
     const user = await dal.deposit(req.params.email, req.params.balance);
+    if (JSON.stringify(user) === '[]') console.log(`User with email ${req.params.email} not found in DB`);
+    else console.log(`Successfully deposited $${user[0].balance} into user's ${user[0].name} account`);
     console.log(user);
     res.send(user);
   } catch (error) {
@@ -56,6 +60,8 @@ app.get('/account/deposit/:email/:balance', async (req, res) => {
 app.get('/account/withdraw/:email/:balance', async (req, res) => {
   try {
     const user = await dal.withdraw(req.params.email, req.params.balance);
+    if (JSON.stringify(user) === '[]') console.log(`User with email ${req.params.email} not found in DB`);
+    else console.log(`Successfully withdrew $${user[0].balance} from user's ${user[0].name} account`);
     console.log(user);
     res.send(user);
   } catch (error) {
@@ -68,6 +74,8 @@ app.get('/account/withdraw/:email/:balance', async (req, res) => {
 app.get('/account/login/:email/:password', async (req, res) => {
   try {
     const user = await dal.login(req.params.email, req.params.password);
+    if (JSON.stringify(user) === '[]') console.log(`Incorrect login credentials`);
+    else console.log(`User ${user[0].balance} successfully logged in`);
     console.log(user);
     res.send(user);
   } catch (error) {
@@ -80,6 +88,8 @@ app.get('/account/login/:email/:password', async (req, res) => {
 app.get('/account/balance/:email', async (req, res) => {
   try {
     const user = await dal.balance(req.params.email);
+    if (JSON.stringify(user) === '[]') console.log(`User with email ${req.params.email} not found in DB`);
+    else console.log(`Account balance is $${user[0].balance} from user's ${user[0].name} account`);
     console.log(user);
     res.send(user);
   } catch (error) {
@@ -92,6 +102,7 @@ app.get('/account/balance/:email', async (req, res) => {
 app.get('/account/all', async (req, res) => {
   try {
     const docs = await dal.all();
+    console.log(`Viewing all accounts in the bank`);
     console.log(docs);
     res.send(docs);
   } catch (error) {
