@@ -1,6 +1,8 @@
 # Bad Bank Web Application
 
-Bad Bank is a simple web application that allows users to create accounts, deposit and withdraw money, check their account balance, and view all user data. It serves as a basic banking system for managing user accounts.
+Bad Bank is a straightforward banking application designed for users to perform common banking actions such as creating accounts, depositing and withdrawing money, checking account balances, and accessing user data. It serves as a fundamental system for managing user accounts.
+
+The name "bad" is derived from the assignment's title in my Full Stack Development class, primarily because, at the initial stage, it lacked robust security measures. While I have since implemented the capability for users to log in to their individual accounts, a quirk remains: users can still view all the accounts under "All Data." This was intentionally done to demonstrate the functionality of the database. However, this lack of security is what led to keeping the "bad" moniker for this banking application.
 
 ## Table of Contents
 
